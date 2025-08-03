@@ -59,6 +59,8 @@ const MODE = process.env.MODE;
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 const allowedOrigins = process.env.FRONTEND_URL?.split(',') || [];
 
 const corsOptions = {
