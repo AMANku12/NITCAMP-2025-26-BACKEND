@@ -12,7 +12,7 @@ class SQLTransport extends Transport {
   }
 
   async log(info: any, callback: () => void) {
-    setImmediate(() => this.emit("logged", info));
+    (setImmediate as any)(() => (this as any).emit("logged", info));
 
     const { level, message, ...meta } = info;
 

@@ -1,11 +1,11 @@
 import {Router, Request, Response, NextFunction} from "express";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { requireAuth } from "../middleware/auth.middleware";
 import { holdAccountController } from "../controllers/holdaccount.controller";
 import { validateIsActive } from "../middleware/validateIsActive.middleware";
 
 
 const router = Router();
 
-router.put("/", authMiddleware, validateIsActive, holdAccountController);
+router.put("/", requireAuth, validateIsActive, holdAccountController);
 
 export default router;

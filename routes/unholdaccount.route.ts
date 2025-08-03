@@ -1,9 +1,9 @@
 import {Router, Request, Response, NextFunction} from "express";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { requireAuth } from "../middleware/auth.middleware";
 import { unholdAccountController } from "../controllers/unhold.controller";
 
 const router = Router();
 
-router.put("/", authMiddleware, unholdAccountController);
+router.put("/", requireAuth, unholdAccountController);
 
 export default router;
