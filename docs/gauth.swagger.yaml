@@ -1,0 +1,147 @@
+paths:
+  /api/auth/google:
+    post:
+      summary: Authenticate with Google
+      description: Authenticate user using Google token. If the user exists, log them in; otherwise, create a new user account. Upon successful authentication, a JWT token is set in a cookie named 'token'.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                googletoken:
+                  type: string
+                  description: Google authentication token
+              required:
+                - googletoken
+      responses:
+        "200":
+          description: Successful authentication for existing user. The response includes user data and role-specific data if applicable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+                  exist:
+                    type: boolean
+                  role:
+                    type: string
+                  roleData:
+                    type: object
+                    description: Role-specific data (e.g., mentee or mentor details), varies based on the user's role
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=abc123; Path=/; HttpOnly
+              description: JWT token set in a cookie
+        "201":
+          description: New user created and authenticated. The response includes the new user's data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+                  exist:
+                    type: boolean
+                  role:
+                    type: string
+                    example: newuser
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=abc123; Path=/; HttpOnly
+              description: JWT token set in a cookie
+        "400":
+          description: Bad request, e.g., missing or invalid googletoken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        "401":
+          description: Invalid Google token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: INVALID GOOGLE TOKEN
+        "403":
+          description: Account deactivated by the user. The response includes user data and a message. A JWT token is set in a cookie to allow the user to reactivate their account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account deactivated by the user
+                  user:
+                    $ref: "#/components/schemas/User"
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=abc123; Path=/; HttpOnly
+              description: JWT token set in a cookie
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: INTERNAL SERVER ERROR
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullname:
+          type: string
+        email:
+          type: string
+        photo_url:
+          type: string
+        role:
+          type: string
+          enum: [newuser, mentee, mentor, admin]
+        is_active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

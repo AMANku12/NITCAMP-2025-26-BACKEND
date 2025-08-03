@@ -1,0 +1,139 @@
+paths:
+  /api/register/mentee:
+    post:
+      summary: Register a new mentee
+      description: Register a new mentee with the provided details. Requires authentication via a JWT token in the cookie, and the user's email must be from "@nitc.ac.in".
+      tags:
+        - Mentee Registration
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: "mentee"
+                  description: The role of the user, must be "mentee".
+                menteeData:
+                  type: object
+                  properties:
+                    personal_email:
+                      type: string
+                      format: email
+                      description: The personal email of the mentee.
+                    phone_no:
+                      type: string
+                      description: The phone number of the mentee.
+                  required:
+                    - personal_email
+                    - phone_no
+              required:
+                - role
+                - menteeData
+      responses:
+        "201":
+          description: Mentee registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "SUCCESS"
+                  user:
+                    $ref: "#/components/schemas/User"
+                  newMentee:
+                    $ref: "#/components/schemas/Mentee"
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=abc123; Path=/; HttpOnly
+              description: Updated JWT token set in the cookie.
+        "400":
+          description: Bad request due to invalid input data
+        "401":
+          description: Unauthorized due to missing or invalid token
+        "403":
+          description: Forbidden (e.g., email not from "@nitc.ac.in" or user is not a new user)
+        "500":
+          description: Internal server error
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+      description: JWT token required for authentication, passed in the cookie.
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullname:
+          type: string
+        email:
+          type: string
+        photo_url:
+          type: string
+        role:
+          type: string
+          enum: [newuser, mentee, mentor, admin]
+        is_active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - role
+    Mentee:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        roll_no:
+          type: string
+        year_of_admission:
+          type: integer
+        personal_email:
+          type: string
+        phone_no:
+          type: string
+        degree:
+          type: string
+        branch:
+          type: string
+        broad_area_of_interest:
+          type: array
+          items:
+            type: string
+        narrow_area_of_interest:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - user_id
+        - roll_no
+        - year_of_admission
+        - personal_email
+        - phone_no
