@@ -50,7 +50,12 @@ export const sessionConfig = {
     maxAge: 60 * 60 * 1000, // 1 hour
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict" as const,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // fix type
+  } as {
+    maxAge: number;
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: boolean | "none" | "lax" | "strict";
   },
 };
 
