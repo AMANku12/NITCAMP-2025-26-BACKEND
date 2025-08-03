@@ -64,8 +64,10 @@ const allowedOrigins = process.env.FRONTEND_URL?.split(',') || [];
 const corsOptions = {
   origin: (origin: any, callback: any) => {
     if (!origin || allowedOrigins.includes(origin)) {
+      console.log(`CORS allowed for origin: ${origin}`);
       callback(null, true);
     } else {
+      console.log(`CORS error for origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
